@@ -57,6 +57,16 @@ swift build --arch arm64
 swift run AtariEmuApp
 ```
 
+## Smoke test
+
+Use the built-in machine smoke test to verify every configured profile can cold-boot with the currently installed local firmware:
+
+```bash
+tools/smoke_test_machines.sh
+```
+
+The current local test setup uses built-in Altirra ROM fallbacks for XL/XE and EmuTOS ROM images from `UserMedia/Firmware/EmuTOS/` for the ST, STE, TT, and Falcon families.
+
 ## Real cores
 
 The app looks for these binaries in the workspace and launches them directly:
