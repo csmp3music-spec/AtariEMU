@@ -1,0 +1,8 @@
+.build
+.swiftpm
+DerivedData
+dist/
+.home/
+.DS_Store
+UserMedia/*
+!UserMedia/README.md

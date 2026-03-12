@@ -1,0 +1,6 @@
+[submodule "third_party/hatari"]
+	path = third_party/hatari
+	url = https://github.com/hatari/hatari.git
+[submodule "third_party/atari800"]
+	path = third_party/atari800
+	url = https://github.com/atari800/atari800.git

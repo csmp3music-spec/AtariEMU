@@ -1,0 +1,112 @@
+{
+  "items": [
+    {
+      "name": "EmuTOS",
+      "category": "firmware",
+      "verificationStatus": "verified-open",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "GPL-2.0",
+      "source": "https://emutos.github.io/manual/",
+      "notes": "Open-source TOS-compatible firmware for ST, TT, and Falcon-class machines."
+    },
+    {
+      "name": "FreeMiNT + XaAES",
+      "category": "operating-system",
+      "verificationStatus": "project-hosted",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "Project-hosted; verify package-level licenses in the release you bundle",
+      "source": "https://freemint.github.io/",
+      "notes": "Kernel plus AES desktop environment available from the FreeMiNT project."
+    },
+    {
+      "name": "TeraDesk",
+      "category": "desktop",
+      "verificationStatus": "verified-open",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "GPL",
+      "source": "https://github.com/freemint/teradesk",
+      "notes": "Open desktop/file manager for Atari ST through Falcon-class systems."
+    },
+    {
+      "name": "fVDI",
+      "category": "graphics",
+      "verificationStatus": "project-hosted",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "Project-hosted; AFROS describes it as part of a GPL-redistributable stack",
+      "source": "https://aranym.github.io/afros.html",
+      "notes": "Free VDI replacement commonly paired with FreeMiNT/XaAES/TeraDesk."
+    },
+    {
+      "name": "AFROS",
+      "category": "distribution",
+      "verificationStatus": "verified-open",
+      "machines": ["atariTT030", "atariFalcon030", "superTT", "superFalconX1200"],
+      "license": "GPL redistributable stack per project page",
+      "source": "https://aranym.github.io/afros.html",
+      "notes": "Preassembled free Atari-compatible operating-system stack built from EmuTOS, FreeMiNT, fVDI, XaAES, and TeraDesk."
+    },
+    {
+      "name": "NetSurf Atari",
+      "category": "browser",
+      "verificationStatus": "verified-open",
+      "machines": ["atariTT030", "atariFalcon030", "superTT", "superFalconX1200"],
+      "license": "GPL-2.0",
+      "source": "https://www.netsurf-browser.org/about/licence.html",
+      "notes": "Open-source browser with official Atari builds published by the NetSurf project CI."
+    },
+    {
+      "name": "QED",
+      "category": "editor",
+      "verificationStatus": "project-hosted",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "Project-hosted; verify repository/license before bundling binaries",
+      "source": "https://github.com/freemint/qed",
+      "notes": "Text editor maintained in the FreeMiNT project space."
+    },
+    {
+      "name": "TosWin2",
+      "category": "terminal",
+      "verificationStatus": "project-hosted",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "Project-hosted; verify repository/license before bundling binaries",
+      "source": "https://github.com/freemint/toswin2",
+      "notes": "Terminal emulator for FreeMiNT maintained in the FreeMiNT project space."
+    },
+    {
+      "name": "COPS",
+      "category": "system",
+      "verificationStatus": "project-hosted",
+      "machines": ["atariSTF", "atariMegaST", "atariStacy", "atariSTE", "atariMegaSTE", "atariTT030", "atariFalcon030", "superST", "superMegaST", "superTT", "superFalconX1200"],
+      "license": "Project-hosted; verify repository/license before bundling binaries",
+      "source": "https://github.com/freemint/cops",
+      "notes": "CPX/control-panel host replacing XCONTROL.ACC for newer Atari setups."
+    },
+    {
+      "name": "HighWire",
+      "category": "browser",
+      "verificationStatus": "project-hosted",
+      "machines": ["atariTT030", "atariFalcon030", "superTT", "superFalconX1200"],
+      "license": "Source-available in the FreeMiNT project space; verify exact redistribution terms before bundling",
+      "source": "https://freemint.github.io/",
+      "notes": "Lightweight GEM browser listed by the FreeMiNT project as an inactive but hosted project."
+    },
+    {
+      "name": "FreeMiNT OS Distro",
+      "category": "distribution",
+      "verificationStatus": "mixed-distribution",
+      "machines": ["atariTT030", "atariFalcon030", "superTT", "superFalconX1200"],
+      "license": "Mixed stack; repository notes a demo HDDRIVER component",
+      "source": "https://github.com/rootadm79/freemint_os_distro",
+      "notes": "Bootable Falcon/TT distribution with FreeMiNT, XaAES, TeraDesk, NetSurf, HighWire, Links, and Unix tools. Treat as a convenience distro, not a clean bundle candidate."
+    },
+    {
+      "name": "FastBasic",
+      "category": "language",
+      "verificationStatus": "verified-open",
+      "machines": ["atariXL", "atariXE", "atari65XE", "atari130XE", "superXL"],
+      "license": "GPL-2.0-or-later",
+      "source": "https://github.com/dmsc/fastbasic",
+      "notes": "Open-source Atari 8-bit BASIC with ATR and XEX outputs available from project releases."
+    }
+  ]
+}
