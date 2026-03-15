@@ -50,6 +50,16 @@ The scanner currently recognizes these extensions:
 
 Not every recognized file is directly bootable. Archives such as `.zip` are cataloged so you can keep downloads in the library, but the launcher only auto-boots real disk, cartridge, program, cassette, and hard-disk image formats.
 
+## Manual media slots in the app
+
+The main machine screen now lets you attach media directly without copying it into the preset library first:
+
+- Atari 8-bit machines expose `Drive A / D1` and `Drive B / D2` disk slots.
+- ST, STE, TT, and Falcon-class machines expose `Drive A`, `Drive B`, `Hard Disk 1`, and `Hard Disk 2`.
+- Preset media still boots automatically, but the manual slots are used for direct machine testing and secondary media.
+
+For Atari 8-bit machines, Atari800 mounts command-line disks sequentially. If you attach only `Drive B / D2`, the launcher creates a temporary blank `D1:` image so your selected disk still lands in `D2:`.
+
 ## Super Max presets
 
 The catalog includes researched `Super Max` presets for:

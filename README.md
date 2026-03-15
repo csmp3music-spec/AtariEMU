@@ -34,6 +34,7 @@ The app now models:
 - Software preset manifests for popular Atari titles and OS targets, while keeping the actual media user-supplied unless it is clearly open-source.
 - Local media discovery from `UserMedia/`, with optional explicit preset mappings and heuristic filename matching.
 - An in-app `Add Media` flow that copies selected disk/program/cartridge images into the current machine catalog and rescans immediately.
+- Manual attachment slots for `Drive A`, `Drive B`, and workstation hard-disk images so you can test machines without creating presets first.
 
 Preset launches now resolve local firmware/media and hand the selected machine off to a real backend process. Video is rendered by the external emulator window, not by the SwiftUI shell.
 

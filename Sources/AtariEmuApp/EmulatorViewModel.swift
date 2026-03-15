@@ -15,6 +15,7 @@ final class EmulatorViewModel {
     private var loaderTask: Task<Void, Never>?
     private var activeBackend: ActiveBackendProcess?
     private var lastLaunchPlan: BackendLaunchPlan?
+    private var manualAttachmentsByModel: [MachineModel: MediaAttachments] = [:]
     private(set) var mediaLibrary = LocalMediaLibrary.scan()
 
     var selectedModel: MachineModel = .atariXL
@@ -38,6 +39,14 @@ final class EmulatorViewModel {
 
     var inventory: MachineLibraryInventory {
         mediaLibrary.inventory(for: selectedModel)
+    }
+
+    var attachmentSlots: [MediaAttachmentSlot] {
+        MediaAttachmentSlot.allCases.filter { $0.isAvailable(for: selectedModel) }
+    }
+
+    var selectedAttachments: MediaAttachments {
+        attachments(for: selectedModel)
     }
 
     var libraryRootPath: String {
@@ -68,6 +77,7 @@ final class EmulatorViewModel {
             "Backend: \(BackendLauncher.defaultBackendDisplayName(for: selectedModel))",
             "Firmware: \(BackendLauncher.firmwareSummary(for: descriptor, mediaLibrary: mediaLibrary))",
             "Media files: \(inventory.softwareFiles.count)",
+            "Attached: \(selectedAttachments.summaryLines(for: selectedModel).joined(separator: " • ").ifEmpty("None"))",
             "Video: External emulator window",
             "Core: \(BackendLauncher.binarySummary(for: selectedModel))",
             "Machine state: \(statusLine)"
@@ -87,7 +97,12 @@ final class EmulatorViewModel {
     }
 
     func start() {
-        launch(model: selectedModel, preset: nil, matchedMediaURL: nil)
+        launch(
+            model: selectedModel,
+            preset: nil,
+            matchedMediaURL: nil,
+            attachments: attachments(for: selectedModel)
+        )
     }
 
     func stop() {
@@ -98,7 +113,14 @@ final class EmulatorViewModel {
     }
 
     func reset() {
-        launch(model: activePreset?.machineModel ?? selectedModel, preset: activePreset, matchedMediaURL: lastLaunchPlan == nil ? nil : nil, usePresetMediaLookup: true)
+        let model = activePreset?.machineModel ?? selectedModel
+        launch(
+            model: model,
+            preset: activePreset,
+            matchedMediaURL: nil,
+            attachments: attachments(for: model),
+            usePresetMediaLookup: true
+        )
     }
 
     func stepFrame() {
@@ -118,7 +140,12 @@ final class EmulatorViewModel {
             return
         }
 
-        launch(model: preset.machineModel, preset: preset, matchedMediaURL: launchPlan.matchedMediaURL)
+        launch(
+            model: preset.machineModel,
+            preset: preset,
+            matchedMediaURL: launchPlan.matchedMediaURL,
+            attachments: attachments(for: preset.machineModel)
+        )
     }
 
     func refreshLibrary() {
@@ -203,10 +230,59 @@ final class EmulatorViewModel {
         NSWorkspace.shared.activateFileViewerSelecting([root])
     }
 
+    func attachmentURL(for slot: MediaAttachmentSlot) -> URL? {
+        attachments(for: selectedModel)[slot]
+    }
+
+    func chooseMediaAttachment(for slot: MediaAttachmentSlot) {
+        let model = selectedModel
+        guard slot.isAvailable(for: model) else {
+            statusLine = "\(slot.title(for: model)) is unavailable for \(model.displayName)"
+            return
+        }
+
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = false
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.resolvesAliases = true
+        panel.title = "Select \(slot.title(for: model)) media"
+        panel.message = "\(slot.notes(for: model)) Supported extensions: \(BackendLauncher.supportedAttachmentExtensions(for: slot, model: model).joined(separator: ", "))"
+        panel.directoryURL = suggestedAttachmentDirectory(for: model)
+
+        guard panel.runModal() == .OK, let selectedURL = panel.url else {
+            return
+        }
+
+        guard BackendLauncher.isAttachableMedia(selectedURL, to: slot, for: model) else {
+            statusLine = "\(selectedURL.lastPathComponent) is not valid for \(slot.title(for: model))"
+            return
+        }
+
+        var updated = attachments(for: model)
+        updated[slot] = selectedURL
+        manualAttachmentsByModel[model] = updated
+        statusLine = "Attached \(selectedURL.lastPathComponent) to \(slot.title(for: model))"
+    }
+
+    func clearMediaAttachment(for slot: MediaAttachmentSlot) {
+        let model = selectedModel
+        var updated = attachments(for: model)
+
+        guard updated[slot] != nil else {
+            return
+        }
+
+        updated[slot] = nil
+        manualAttachmentsByModel[model] = updated
+        statusLine = "Cleared \(slot.title(for: model))"
+    }
+
     private func launch(
         model: MachineModel,
         preset: SoftwarePreset?,
         matchedMediaURL: URL?,
+        attachments: MediaAttachments,
         usePresetMediaLookup: Bool = false
     ) {
         stopActiveBackend()
@@ -237,6 +313,7 @@ final class EmulatorViewModel {
                     model: model,
                     preset: preset,
                     matchedMediaURL: resolvedMediaURL,
+                    attachments: attachments,
                     mediaLibrary: self.mediaLibrary
                 )
 
@@ -285,6 +362,22 @@ final class EmulatorViewModel {
         activeBackend?.terminate()
         activeBackend = nil
         isRunning = false
+    }
+
+    private func attachments(for model: MachineModel) -> MediaAttachments {
+        manualAttachmentsByModel[model] ?? .empty
+    }
+
+    private func suggestedAttachmentDirectory(for model: MachineModel) -> URL? {
+        if let rootURL = mediaLibrary.rootURL {
+            let softwareDirectory = rootURL.appendingPathComponent("Software/\(model.rawValue)", isDirectory: true)
+            if FileManager.default.fileExists(atPath: softwareDirectory.path) {
+                return softwareDirectory
+            }
+            return rootURL
+        }
+
+        return WorkspacePaths.repositoryRoot(fileManager: .default)
     }
 
     private func ensureWritableSoftwareDirectory(for model: MachineModel) throws -> URL {
@@ -388,5 +481,11 @@ final class EmulatorViewModel {
         }
 
         return candidateURL
+    }
+}
+
+private extension String {
+    func ifEmpty(_ fallback: String) -> String {
+        isEmpty ? fallback : self
     }
 }

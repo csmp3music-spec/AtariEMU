@@ -313,24 +313,12 @@ struct ContentView: View {
     }
 
     private var mediaSection: some View {
-        section(title: "Boot Media") {
-            ForEach(viewModel.descriptor.mediaSlots, id: \.name) { slot in
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text(slot.name)
-                            .font(.headline)
-                        Spacer()
-                        Text(slot.isRequired ? "Required" : "Optional")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(slot.isRequired ? .red : .secondary)
-                    }
-                    Text(slot.notes)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(14)
-                .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+        section(title: "Media Attachments") {
+            ForEach(viewModel.attachmentSlots, id: \.id) { slot in
+                mediaAttachmentCard(for: slot)
             }
+
+            mediaRequirementsCard
         }
     }
 
@@ -430,5 +418,51 @@ struct ContentView: View {
             Text(values.joined(separator: ", "))
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    private func mediaAttachmentCard(for slot: MediaAttachmentSlot) -> some View {
+        let currentURL = viewModel.attachmentURL(for: slot)
+
+        return VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(slot.title(for: viewModel.selectedModel))
+                    .font(.headline)
+                Spacer()
+                Text(currentURL == nil ? "Empty" : "Attached")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(currentURL == nil ? Color.secondary : Color.green)
+            }
+            Text(slot.notes(for: viewModel.selectedModel))
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            Text(currentURL?.path ?? "No file selected")
+                .font(.callout.monospaced())
+                .foregroundStyle(.secondary)
+            HStack(spacing: 10) {
+                Button("Choose") {
+                    viewModel.chooseMediaAttachment(for: slot)
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Clear") {
+                    viewModel.clearMediaAttachment(for: slot)
+                }
+                .buttonStyle(.bordered)
+                .disabled(currentURL == nil)
+            }
+        }
+        .padding(14)
+        .background(Color.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var mediaRequirementsCard: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(viewModel.descriptor.mediaSlots, id: \.name) { slot in
+                Text("\(slot.name): \(slot.notes)")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(14)
+        .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
     }
 }

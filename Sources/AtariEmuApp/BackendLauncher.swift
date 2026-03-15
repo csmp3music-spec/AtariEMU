@@ -125,6 +125,44 @@ enum BackendLauncher {
         }
     }
 
+    static func isAttachableMedia(_ url: URL, to slot: MediaAttachmentSlot, for model: MachineModel) -> Bool {
+        switch backendKind(for: model) {
+        case .atari800:
+            switch slot {
+            case .driveA, .driveB:
+                return classifyAtari800Media(url) == .disk
+            case .hardDisk1, .hardDisk2:
+                return false
+            }
+        case .hatari:
+            switch slot {
+            case .driveA, .driveB:
+                return classifyHatariMedia(url) == .floppy
+            case .hardDisk1, .hardDisk2:
+                return classifyHatariMedia(url) == .hardDisk
+            }
+        }
+    }
+
+    static func supportedAttachmentExtensions(for slot: MediaAttachmentSlot, model: MachineModel) -> [String] {
+        switch backendKind(for: model) {
+        case .atari800:
+            switch slot {
+            case .driveA, .driveB:
+                return ["atr", "atx", "atz", "dcm", "pro", "xfd", "xfz", "atr.gz", "xfd.gz"]
+            case .hardDisk1, .hardDisk2:
+                return []
+            }
+        case .hatari:
+            switch slot {
+            case .driveA, .driveB:
+                return ["st", "msa", "stx", "ipf", "dim", "raw", "ctr", "mfm", "fdi", "flp", "stt", "img", "st.gz", "msa.gz", "dim.gz", "ipf.gz", "ctr.gz", "st.zip", "msa.zip"]
+            case .hardDisk1, .hardDisk2:
+                return ["hda", "hdf", "hdv", "vdi", "vhd", "img"]
+            }
+        }
+    }
+
     static func launchFailureSummary(from logURL: URL) -> String? {
         guard
             let logContents = try? String(contentsOf: logURL, encoding: .utf8)
@@ -146,6 +184,7 @@ enum BackendLauncher {
         model: MachineModel,
         preset: SoftwarePreset?,
         matchedMediaURL: URL?,
+        attachments: MediaAttachments,
         mediaLibrary: LocalMediaLibrary
     ) throws -> BackendLaunchPlan {
         let executableURL = try resolveExecutable(for: model)
@@ -166,6 +205,7 @@ enum BackendLauncher {
                 model: model,
                 preset: preset,
                 matchedMediaURL: matchedMediaURL,
+                attachments: attachments,
                 mediaLibrary: mediaLibrary,
                 executableURL: executableURL,
                 launchDirectory: launchDirectory,
@@ -176,6 +216,7 @@ enum BackendLauncher {
                 model: model,
                 preset: preset,
                 matchedMediaURL: matchedMediaURL,
+                attachments: attachments,
                 mediaLibrary: mediaLibrary,
                 executableURL: executableURL,
                 launchDirectory: launchDirectory,
@@ -226,6 +267,7 @@ enum BackendLauncher {
         model: MachineModel,
         preset: SoftwarePreset?,
         matchedMediaURL: URL?,
+        attachments: MediaAttachments,
         mediaLibrary: LocalMediaLibrary,
         executableURL: URL,
         launchDirectory: URL,
@@ -234,6 +276,7 @@ enum BackendLauncher {
         let firmware = try resolveEightBitFirmware(for: model, mediaLibrary: mediaLibrary)
         let hostDriveDirectory = launchDirectory.appendingPathComponent("HDrive", isDirectory: true)
         try FileManager.default.createDirectory(at: hostDriveDirectory, withIntermediateDirectories: true)
+        let validatedAttachments = try validateAttachments(attachments, for: model)
 
         var arguments: [String] = [
             machineArgument(for: model),
@@ -258,7 +301,10 @@ enum BackendLauncher {
             arguments += ["-basic-rev", "altirra", "-basic"]
         }
 
-        let mediaSummary: String
+        var mediaSummaryParts: [String] = []
+        var ignoredSummaryParts: [String] = []
+        var driveOneOccupiedByBootDisk = false
+
         if let matchedMediaURL {
             guard let mediaKind = classifyAtari800Media(matchedMediaURL) else {
                 throw BackendLaunchError.launchFailed("The selected file is not directly bootable in Atari800: \(matchedMediaURL.lastPathComponent)")
@@ -267,20 +313,47 @@ enum BackendLauncher {
             switch mediaKind {
             case .disk:
                 arguments.append(matchedMediaURL.path)
-                mediaSummary = matchedMediaURL.lastPathComponent
+                mediaSummaryParts.append("D1: \(matchedMediaURL.lastPathComponent)")
+                driveOneOccupiedByBootDisk = true
             case .program:
                 arguments += ["-run", matchedMediaURL.path]
-                mediaSummary = matchedMediaURL.lastPathComponent
+                mediaSummaryParts.append("Program: \(matchedMediaURL.lastPathComponent)")
             case .cartridge:
                 arguments += ["-cart", matchedMediaURL.path]
-                mediaSummary = matchedMediaURL.lastPathComponent
+                mediaSummaryParts.append("Cartridge: \(matchedMediaURL.lastPathComponent)")
             case .tape:
                 arguments += ["-boottape", matchedMediaURL.path]
-                mediaSummary = matchedMediaURL.lastPathComponent
+                mediaSummaryParts.append("Tape: \(matchedMediaURL.lastPathComponent)")
             }
-        } else {
-            mediaSummary = preset?.name ?? "No boot media attached"
         }
+
+        if driveOneOccupiedByBootDisk {
+            if validatedAttachments.driveA != nil {
+                ignoredSummaryParts.append("Drive A ignored because D1 is occupied by boot media")
+            }
+        } else if let driveA = validatedAttachments.driveA {
+            arguments.append(driveA.path)
+            mediaSummaryParts.append("D1: \(driveA.lastPathComponent)")
+        }
+
+        if let driveB = validatedAttachments.driveB {
+            if driveOneOccupiedByBootDisk || validatedAttachments.driveA != nil {
+                arguments.append(driveB.path)
+                mediaSummaryParts.append("D2: \(driveB.lastPathComponent)")
+            } else {
+                let placeholderURL = try createBlankATRPlaceholder(at: launchDirectory)
+                arguments.append(placeholderURL.path)
+                arguments.append(driveB.path)
+                mediaSummaryParts.append("D1: Empty placeholder")
+                mediaSummaryParts.append("D2: \(driveB.lastPathComponent)")
+            }
+        }
+
+        let mediaSummary = formattedMediaSummary(
+            primary: mediaSummaryParts,
+            ignored: ignoredSummaryParts,
+            fallback: preset?.name ?? "No boot media attached"
+        ) ?? (preset?.name ?? "No boot media attached")
 
         return BackendLaunchPlan(
             backend: .atari800,
@@ -302,12 +375,14 @@ enum BackendLauncher {
         model: MachineModel,
         preset: SoftwarePreset?,
         matchedMediaURL: URL?,
+        attachments: MediaAttachments,
         mediaLibrary: LocalMediaLibrary,
         executableURL: URL,
         launchDirectory: URL,
         logURL: URL
     ) throws -> BackendLaunchPlan {
         let firmware = try resolveTOSFirmware(for: model, mediaLibrary: mediaLibrary)
+        let validatedAttachments = try validateAttachments(attachments, for: model)
 
         var arguments: [String] = [
             "--machine", hatariMachineType(for: model),
@@ -331,6 +406,7 @@ enum BackendLauncher {
 
         let mediaSummary = try appendHatariMediaArguments(
             for: matchedMediaURL,
+            attachments: validatedAttachments,
             model: model,
             launchDirectory: launchDirectory,
             arguments: &arguments
@@ -349,18 +425,43 @@ enum BackendLauncher {
 
     private static func appendHatariMediaArguments(
         for mediaURL: URL?,
+        attachments: MediaAttachments,
         model: MachineModel,
         launchDirectory: URL,
         arguments: inout [String]
     ) throws -> String? {
+        var mediaSummaryParts: [String] = []
+        var ignoredSummaryParts: [String] = []
+
         guard let mediaURL else {
+            if let driveA = attachments.driveA {
+                arguments += ["--disk-a", driveA.path]
+                mediaSummaryParts.append("Drive A: \(driveA.lastPathComponent)")
+            }
+
+            if let driveB = attachments.driveB {
+                arguments += ["--disk-b", driveB.path]
+                mediaSummaryParts.append("Drive B: \(driveB.lastPathComponent)")
+            }
+
+            if let hardDisk1 = attachments.hardDisk1 {
+                appendHatariHardDiskArgument(for: hardDisk1, slot: .hardDisk1, model: model, arguments: &arguments)
+                mediaSummaryParts.append("Hard Disk 1: \(hardDisk1.lastPathComponent)")
+            }
+
+            if let hardDisk2 = attachments.hardDisk2 {
+                appendHatariHardDiskArgument(for: hardDisk2, slot: .hardDisk2, model: model, arguments: &arguments)
+                mediaSummaryParts.append("Hard Disk 2: \(hardDisk2.lastPathComponent)")
+            }
+
             if isVirtualStoragePreset(model) {
                 let gemdosDirectory = launchDirectory.appendingPathComponent("GemDOS", isDirectory: true)
                 try FileManager.default.createDirectory(at: gemdosDirectory, withIntermediateDirectories: true)
                 arguments += ["--harddrive", gemdosDirectory.path]
-                return "Host GEMDOS drive (\(gemdosDirectory.lastPathComponent))"
+                mediaSummaryParts.append("Host GEMDOS drive (\(gemdosDirectory.lastPathComponent))")
             }
-            return nil
+
+            return formattedMediaSummary(primary: mediaSummaryParts, ignored: ignoredSummaryParts)
         }
 
         guard let mediaKind = classifyHatariMedia(mediaURL) else {
@@ -370,22 +471,114 @@ enum BackendLauncher {
         switch mediaKind {
         case .floppy:
             arguments += ["--disk-a", mediaURL.path]
-            return mediaURL.lastPathComponent
-        case .hardDisk:
-            if usesIDEStorage(for: model) {
-                arguments += ["--ide-master", mediaURL.path]
-            } else {
-                arguments += ["--acsi", "0=\(mediaURL.path)"]
+            mediaSummaryParts.append("Drive A: \(mediaURL.lastPathComponent)")
+            if attachments.driveA != nil {
+                ignoredSummaryParts.append("Drive A ignored because boot media already uses it")
             }
-            return mediaURL.lastPathComponent
+        case .hardDisk:
+            appendHatariHardDiskArgument(for: mediaURL, slot: .hardDisk1, model: model, arguments: &arguments)
+            mediaSummaryParts.append("Hard Disk 1: \(mediaURL.lastPathComponent)")
+            if attachments.hardDisk1 != nil {
+                ignoredSummaryParts.append("Hard Disk 1 ignored because boot media already uses it")
+            }
         case .gemDOSProgram:
             let parentDirectory = mediaURL.deletingLastPathComponent()
             arguments += [
                 "--harddrive", parentDirectory.path,
                 "--auto", "C:\\\(mediaURL.lastPathComponent)"
             ]
-            return mediaURL.lastPathComponent
+            mediaSummaryParts.append("Autostart: \(mediaURL.lastPathComponent)")
         }
+
+        if let driveB = attachments.driveB {
+            arguments += ["--disk-b", driveB.path]
+            mediaSummaryParts.append("Drive B: \(driveB.lastPathComponent)")
+        }
+
+        if mediaKind != .floppy, let driveA = attachments.driveA {
+            arguments += ["--disk-a", driveA.path]
+            mediaSummaryParts.append("Drive A: \(driveA.lastPathComponent)")
+        }
+
+        if mediaKind != .hardDisk, let hardDisk1 = attachments.hardDisk1 {
+            appendHatariHardDiskArgument(for: hardDisk1, slot: .hardDisk1, model: model, arguments: &arguments)
+            mediaSummaryParts.append("Hard Disk 1: \(hardDisk1.lastPathComponent)")
+        }
+
+        if let hardDisk2 = attachments.hardDisk2 {
+            appendHatariHardDiskArgument(for: hardDisk2, slot: .hardDisk2, model: model, arguments: &arguments)
+            mediaSummaryParts.append("Hard Disk 2: \(hardDisk2.lastPathComponent)")
+        }
+
+        return formattedMediaSummary(primary: mediaSummaryParts, ignored: ignoredSummaryParts)
+    }
+
+    private static func validateAttachments(_ attachments: MediaAttachments, for model: MachineModel) throws -> MediaAttachments {
+        let validated = attachments
+
+        for slot in MediaAttachmentSlot.allCases {
+            guard let url = validated[slot] else {
+                continue
+            }
+
+            guard slot.isAvailable(for: model) else {
+                throw BackendLaunchError.launchFailed("\(slot.title(for: model)) is not available on \(model.displayName)")
+            }
+
+            guard isAttachableMedia(url, to: slot, for: model) else {
+                throw BackendLaunchError.launchFailed("\(url.lastPathComponent) is not valid for \(slot.title(for: model)) on \(model.displayName)")
+            }
+        }
+
+        return validated
+    }
+
+    private static func createBlankATRPlaceholder(at launchDirectory: URL) throws -> URL {
+        let placeholderURL = launchDirectory.appendingPathComponent("placeholder-d1.atr")
+        guard !FileManager.default.fileExists(atPath: placeholderURL.path) else {
+            return placeholderURL
+        }
+
+        var data = Data([
+            0x96, 0x02,
+            0x80, 0x16,
+            0x00, 0x00,
+            0x80, 0x00,
+            0x00, 0x00,
+            0x00, 0x00,
+            0x00, 0x00,
+            0x00, 0x00
+        ])
+        data.append(Data(repeating: 0, count: 720 * 128))
+        try data.write(to: placeholderURL, options: .atomic)
+        return placeholderURL
+    }
+
+    private static func appendHatariHardDiskArgument(
+        for mediaURL: URL,
+        slot: MediaAttachmentSlot,
+        model: MachineModel,
+        arguments: inout [String]
+    ) {
+        if usesIDEStorage(for: model) {
+            arguments += slot == .hardDisk1
+                ? ["--ide-master", mediaURL.path]
+                : ["--ide-slave", mediaURL.path]
+        } else {
+            let busID = slot == .hardDisk1 ? "0" : "1"
+            arguments += ["--acsi", "\(busID)=\(mediaURL.path)"]
+        }
+    }
+
+    private static func formattedMediaSummary(primary: [String], ignored: [String], fallback: String? = nil) -> String? {
+        var parts = primary
+        parts.append(contentsOf: ignored)
+
+        if parts.isEmpty {
+            return fallback
+        }
+
+        return parts.joined(separator: " • ")
     }
 
     private static func resolveExecutable(for model: MachineModel) throws -> URL {
@@ -670,7 +863,7 @@ enum BackendLauncher {
             return .cartridge
         case "cas":
             return .tape
-        case "atr", "atx", "atz", "dcm", "pro", "xfd", "xfz":
+        case "atr", "atx", "atz", "dcm", "pro", "xfd", "xfz", "atrgz", "xfdgz":
             return .disk
         default:
             return nil
@@ -688,7 +881,7 @@ enum BackendLauncher {
         case "img":
             let fileSize = (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
             return fileSize > 2_000_000 ? .hardDisk : .floppy
-        case "st", "msa", "stx", "ipf", "dim", "raw", "ctr", "mfm", "fdi", "flp", "stt":
+        case "st", "msa", "stx", "ipf", "dim", "raw", "ctr", "mfm", "fdi", "flp", "stt", "stgz", "msagz", "dimgz", "ipfgz", "ctrgz", "stzip", "msazip":
             return .floppy
         default:
             return nil

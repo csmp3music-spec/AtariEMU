@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="4200" viewBox="0 0 3000 4200" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="260" y1="180" x2="2660" y2="4030" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A5A21"/>
+      <stop offset="0.34" stop-color="#0A3117"/>
+      <stop offset="0.72" stop-color="#06130C"/>
+      <stop offset="1" stop-color="#020504"/>
+    </linearGradient>
+    <radialGradient id="greenGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 1020) rotate(36) scale(1560 1220)">
+      <stop offset="0" stop-color="#53F07E" stop-opacity="0.62"/>
+      <stop offset="0.42" stop-color="#1DBB57" stop-opacity="0.26"/>
+      <stop offset="1" stop-color="#1DBB57" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rainbow" x1="470" y1="3160" x2="2620" y2="1040" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF4F4F"/>
+      <stop offset="0.16" stop-color="#FF9146"/>
+      <stop offset="0.32" stop-color="#FFD94E"/>
+      <stop offset="0.48" stop-color="#50E86E"/>
+      <stop offset="0.66" stop-color="#4FE2FF"/>
+      <stop offset="0.82" stop-color="#508BFF"/>
+      <stop offset="1" stop-color="#FF62D6"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="536" y1="1360" x2="2478" y2="3020" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#17241B"/>
+      <stop offset="0.5" stop-color="#0B120E"/>
+      <stop offset="1" stop-color="#040605"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="724" y1="1520" x2="2252" y2="2830" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#071A0F"/>
+      <stop offset="0.6" stop-color="#07100A"/>
+      <stop offset="1" stop-color="#030604"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="468" y1="468" x2="2532" y2="3732" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#E8F1E8" stop-opacity="0.94"/>
+      <stop offset="0.4" stop-color="#AAB6AA" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#E8F1E8" stop-opacity="0.18"/>
+    </linearGradient>
+    <pattern id="scanlines" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="transparent"/>
+      <rect y="0" width="10" height="2" fill="#FFFFFF" fill-opacity="0.03"/>
+    </pattern>
+    <pattern id="grid" width="90" height="90" patternUnits="userSpaceOnUse">
+      <path d="M 90 0 L 0 0 0 90" stroke="#9EF3B3" stroke-opacity="0.11" stroke-width="2"/>
+    </pattern>
+    <filter id="softBlur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="3000" height="4200" fill="#020403"/>
+  <rect width="3000" height="4200" fill="url(#bg)"/>
+  <rect width="3000" height="4200" fill="url(#greenGlow)"/>
+  <rect width="3000" height="4200" fill="url(#scanlines)"/>
+
+  <rect x="124" y="124" width="2752" height="3952" rx="54" stroke="url(#frame)" stroke-width="10"/>
+  <rect x="170" y="170" width="2660" height="3860" rx="42" stroke="#D9F7DE" stroke-opacity="0.18" stroke-width="2"/>
+
+  <g opacity="0.82">
+    <path d="M 260 3290 C 790 3020, 1180 2520, 1560 2080 C 1880 1710, 2210 1360, 2720 980" stroke="#FF5B4E" stroke-width="94" stroke-linecap="round"/>
+    <path d="M 260 3400 C 790 3130, 1180 2630, 1560 2190 C 1880 1820, 2210 1470, 2720 1090" stroke="#FFB24E" stroke-width="72" stroke-linecap="round"/>
+    <path d="M 260 3510 C 790 3240, 1180 2740, 1560 2300 C 1880 1930, 2210 1580, 2720 1200" stroke="#F8F05C" stroke-width="62" stroke-linecap="round"/>
+    <path d="M 260 3620 C 790 3350, 1180 2850, 1560 2410 C 1880 2040, 2210 1690, 2720 1310" stroke="#54EF78" stroke-width="56" stroke-linecap="round"/>
+    <path d="M 260 3730 C 790 3460, 1180 2960, 1560 2520 C 1880 2150, 2210 1800, 2720 1420" stroke="#5FE5FF" stroke-width="54" stroke-linecap="round"/>
+    <path d="M 260 3840 C 790 3570, 1180 3070, 1560 2630 C 1880 2260, 2210 1910, 2720 1530" stroke="#5F8BFF" stroke-width="52" stroke-linecap="round"/>
+    <path d="M 260 3950 C 790 3680, 1180 3180, 1560 2740 C 1880 2370, 2210 2020, 2720 1640" stroke="#FF67D7" stroke-width="48" stroke-linecap="round"/>
+  </g>
+
+  <ellipse cx="2220" cy="860" rx="360" ry="210" fill="#87FF93" fill-opacity="0.22" filter="url(#softBlur)"/>
+  <ellipse cx="944" cy="2460" rx="530" ry="380" fill="#B8FF75" fill-opacity="0.08" filter="url(#softBlur)"/>
+
+  <g>
+    <rect x="272" y="246" width="474" height="84" rx="42" fill="#E7F7E4" fill-opacity="0.12" stroke="#E7F7E4" stroke-opacity="0.24" stroke-width="2"/>
+    <text x="509" y="302" text-anchor="middle" fill="#F4FFF0" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="9">MACOS ARM64</text>
+  </g>
+
+  <g>
+    <circle cx="2556" cy="286" r="88" fill="#07120B" stroke="#E7F7E4" stroke-opacity="0.28" stroke-width="3"/>
+    <circle cx="2556" cy="286" r="72" fill="none" stroke="url(#rainbow)" stroke-width="10"/>
+    <text x="2556" y="272" text-anchor="middle" fill="#F7FFF4" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="4">DSP</text>
+    <text x="2556" y="316" text-anchor="middle" fill="#A8FFC4" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="3">56001</text>
+  </g>
+
+  <g transform="translate(274 438)">
+    <text x="0" y="0" fill="#F7FFF7" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="286" font-weight="900" letter-spacing="18">ATARI</text>
+    <text x="0" y="270" fill="url(#rainbow)" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="364" font-weight="900" letter-spacing="16" filter="url(#glow)">EMU</text>
+    <text x="10" y="374" fill="#A9DDB3" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="74" font-weight="700" letter-spacing="10">XL TO FALCON. ONE NATIVE MAC.</text>
+  </g>
+
+  <g transform="translate(1780 480)">
+    <path d="M 186 0 L 266 0 L 352 392 L 262 392 Z" fill="#F6FFF7" fill-opacity="0.93"/>
+    <path d="M 0 392 L 92 392 L 176 36 L 84 36 Z" fill="#F6FFF7" fill-opacity="0.93"/>
+    <path d="M 438 392 L 530 392 L 446 36 L 354 36 Z" fill="#F6FFF7" fill-opacity="0.93"/>
+    <path d="M 178 34 L 266 34 L 338 360 L 248 360 Z" fill="url(#rainbow)"/>
+    <path d="M 18 360 L 86 360 L 154 70 L 84 70 Z" fill="url(#rainbow)"/>
+    <path d="M 444 360 L 514 360 L 446 70 L 376 70 Z" fill="url(#rainbow)"/>
+  </g>
+
+  <g>
+    <rect x="504" y="1284" width="1992" height="1764" rx="40" fill="url(#steel)" stroke="#F3FFF5" stroke-opacity="0.22" stroke-width="4"/>
+    <rect x="564" y="1344" width="1872" height="1644" rx="28" fill="#030805" stroke="#C3FFD2" stroke-opacity="0.12" stroke-width="2"/>
+    <rect x="626" y="1410" width="1748" height="1510" rx="18" fill="url(#screen)"/>
+    <rect x="626" y="1410" width="1748" height="1510" rx="18" fill="url(#scanlines)"/>
+    <rect x="626" y="1410" width="1748" height="1510" rx="18" stroke="#7BFF9C" stroke-opacity="0.16" stroke-width="2"/>
+
+    <g opacity="0.88">
+      <rect x="768" y="1590" width="58" height="820" rx="28" fill="#FF5A4A"/>
+      <rect x="872" y="1460" width="58" height="1030" rx="28" fill="#FF9E49"/>
+      <rect x="976" y="1382" width="58" height="1186" rx="28" fill="#F0F45A"/>
+      <rect x="1080" y="1460" width="58" height="1030" rx="28" fill="#51EA74"/>
+      <rect x="1184" y="1590" width="58" height="820" rx="28" fill="#54E4FF"/>
+      <rect x="1288" y="1710" width="58" height="580" rx="28" fill="#508CFF"/>
+      <rect x="1392" y="1812" width="58" height="376" rx="28" fill="#FF67D7"/>
+    </g>
+
+    <g transform="translate(1524 1600)">
+      <path d="M 170 0 L 250 0 L 338 470 L 248 470 Z" fill="#F7FFF7"/>
+      <path d="M 0 470 L 88 470 L 174 74 L 88 74 Z" fill="#F7FFF7"/>
+      <path d="M 424 470 L 512 470 L 426 74 L 338 74 Z" fill="#F7FFF7"/>
+      <path d="M 162 64 L 248 64 L 318 430 L 232 430 Z" fill="url(#rainbow)"/>
+      <path d="M 18 430 L 84 430 L 150 116 L 84 116 Z" fill="url(#rainbow)"/>
+      <path d="M 428 430 L 494 430 L 428 116 L 362 116 Z" fill="url(#rainbow)"/>
+      <text x="256" y="650" text-anchor="middle" fill="#F6FFF8" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="116" font-weight="900" letter-spacing="8">XL XE ST TT FALCON</text>
+      <text x="256" y="758" text-anchor="middle" fill="#A8FFB6" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="58" font-weight="700" letter-spacing="7">EMUTOS  MI NT  LINUX/M68K  DSP</text>
+    </g>
+
+    <g opacity="0.95">
+      <path d="M 762 2572 L 2238 2572 L 2368 2718 L 632 2718 Z" fill="#0B1510"/>
+      <path d="M 916 2514 L 2086 2514 L 2164 2572 L 838 2572 Z" fill="#121E16"/>
+      <rect x="1008" y="2722" width="984" height="116" rx="18" fill="#0B1510"/>
+      <rect x="1058" y="2750" width="884" height="20" rx="10" fill="#D5E7D8" fill-opacity="0.18"/>
+      <rect x="1058" y="2788" width="884" height="20" rx="10" fill="#D5E7D8" fill-opacity="0.18"/>
+      <rect x="1058" y="2826" width="884" height="20" rx="10" fill="#D5E7D8" fill-opacity="0.18"/>
+    </g>
+
+    <rect x="700" y="2860" width="1600" height="2" fill="#B4FFCA" fill-opacity="0.14"/>
+  </g>
+
+  <g transform="translate(244 3150)">
+    <rect x="0" y="0" width="2512" height="690" rx="34" fill="#040806" stroke="#DDF8E3" stroke-opacity="0.16" stroke-width="3"/>
+    <rect x="50" y="54" width="2412" height="582" rx="22" fill="#07100B"/>
+    <rect x="50" y="54" width="2412" height="582" rx="22" fill="url(#grid)"/>
+    <path d="M 0 520 C 330 402, 684 354, 1040 344 C 1406 334, 1774 362, 2132 444 C 2300 482, 2432 522, 2512 560 L 2512 690 L 0 690 Z" fill="#05120A" fill-opacity="0.92"/>
+
+    <text x="114" y="168" fill="#F6FFF6" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="88" font-weight="900" letter-spacing="10">THE COMPLETE ATARI SPAN</text>
+    <text x="116" y="262" fill="#AAFFB9" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="54" font-weight="700" letter-spacing="6">8-BIT CLASSICS. GEM DESKTOPS. TT WORKSTATIONS. FALCON DSP.</text>
+
+    <g transform="translate(112 338)">
+      <rect width="424" height="94" rx="47" fill="#0E1D12" stroke="#A8FFC4" stroke-opacity="0.22" stroke-width="2"/>
+      <text x="212" y="61" text-anchor="middle" fill="#F7FFF8" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="4">SUPER XL</text>
+    </g>
+    <g transform="translate(574 338)">
+      <rect width="502" height="94" rx="47" fill="#0E1D12" stroke="#A8FFC4" stroke-opacity="0.22" stroke-width="2"/>
+      <text x="251" y="61" text-anchor="middle" fill="#F7FFF8" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="4">SUPER ST / TT</text>
+    </g>
+    <g transform="translate(1112 338)">
+      <rect width="514" height="94" rx="47" fill="#0E1D12" stroke="#A8FFC4" stroke-opacity="0.22" stroke-width="2"/>
+      <text x="257" y="61" text-anchor="middle" fill="#F7FFF8" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="4">SUPER FALCON</text>
+    </g>
+    <g transform="translate(1662 338)">
+      <rect width="348" height="94" rx="47" fill="#0E1D12" stroke="#A8FFC4" stroke-opacity="0.22" stroke-width="2"/>
+      <text x="174" y="61" text-anchor="middle" fill="#F7FFF8" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="4">MiNT</text>
+    </g>
+    <g transform="translate(2048 338)">
+      <rect width="304" height="94" rx="47" fill="#0E1D12" stroke="#A8FFC4" stroke-opacity="0.22" stroke-width="2"/>
+      <text x="152" y="61" text-anchor="middle" fill="#F7FFF8" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="42" font-weight="800" letter-spacing="4">LNX</text>
+    </g>
+
+    <text x="116" y="548" fill="#D8F9E0" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="46" font-weight="700" letter-spacing="5">USER-SUPPLIED DISKS. OPEN FIRMWARE PATH. MULTI-SLOT MEDIA TESTING. NATIVE APPLE SILICON HOST.</text>
+  </g>
+
+  <g opacity="0.65">
+    <circle cx="414" cy="404" r="6" fill="#F5FFF7"/>
+    <circle cx="470" cy="404" r="6" fill="#F5FFF7"/>
+    <circle cx="526" cy="404" r="6" fill="#F5FFF7"/>
+  </g>
+
+  <text x="1500" y="4056" text-anchor="middle" fill="#D7F0DA" fill-opacity="0.72" font-family="Avenir Next Condensed, Futura, Helvetica Neue, Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="12">ATARIEMU  /  XL THROUGH FALCON  /  BOX COVER CONCEPT</text>
+</svg>
